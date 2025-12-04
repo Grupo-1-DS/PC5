@@ -20,7 +20,7 @@ class SecretGuardian:
     def __init__(self):
         self.patterns = self._initialize_patterns()
         self.findings = []
-        self.excluded_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "evidence"}
+        self.excluded_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "evidence", "fixtures"}
         self.excluded_extensions = {".pyc", ".pyo", ".exe", ".dll", ".so", ".dylib"}
 
     def _initialize_patterns(self) -> List[SecretPattern]:
