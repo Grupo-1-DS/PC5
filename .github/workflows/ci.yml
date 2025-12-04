@@ -21,7 +21,7 @@ jobs:
       - run: |
           black --check .
       
-      - name: Verificar estilo con flake8
+      - name: Verificar estilo con f lake8
       - run: |
           flake8 .
 
