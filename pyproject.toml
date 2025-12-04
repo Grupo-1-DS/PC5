@@ -1,0 +1,8 @@
+[tool.black]
+line-length = 120
+target-version = ["py312"]
+exclude = '''
+(
+    /(\.git|\.evidence|__pycache__|\.venv|k8s|fixtures)/
+)
+'''
