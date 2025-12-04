@@ -1,0 +1,4 @@
+# Archivo de prueba con API keys
+API_KEY = "sk_live_12345678901234567890"
+STRIPE_API_KEY = "pk_test_12345678901234567890"
+api_key = "sk_test_12345678901234567890"
