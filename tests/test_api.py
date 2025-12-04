@@ -1,8 +1,8 @@
 import sys
-import time
 import pytest
 from fastapi.testclient import TestClient
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from app.main import app
 
@@ -10,12 +10,17 @@ ROOT = Path(__file__).resolve().parent.parent
 
 client = TestClient(app)
 
+
 @pytest.fixture
 def create_and_clean_evidence():
     evidence_dir = ROOT / "evidence"
     evidence_dir.mkdir(parents=True, exist_ok=True)
     scan_file = evidence_dir / "secrets-scan.json"
-    scan_file.write_text('{"founded_count":1,"founded_secrets":[{"type":"API Key","file":"test.py","line":15}]}', encoding="utf-8")
+    scan_file.write_text(
+        '{"founded_count":1, \
+        "founded_secrets":[{"type":"API Key","file":"test.py","line":15}]}',
+        encoding="utf-8",
+    )
 
     yield
 
@@ -30,7 +35,7 @@ def test_health():
     assert r.json()["status"] == "ok"
 
 
-def test_scan_result_success(create_and_clean_evidence):    
+def test_scan_result_success(create_and_clean_evidence):
     result = client.get("/scan-result")
     data = result.json()
 
