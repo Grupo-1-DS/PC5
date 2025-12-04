@@ -8,7 +8,9 @@ exclude =
     k8s,
     dist,
     build,
-    node_modules
+    fixtures
+    evidence
 extend-ignore =
     E501,
-    E402
+    E402,
+    E722
