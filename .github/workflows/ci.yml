@@ -1,0 +1,30 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  linters:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+      - uses: actions/checkout@v4
+
+      - name: Configurar proyecto python
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Instalar dependencias del proyecto
+      - run: |
+          pip install -r requirements.txt
+          pip install flake8 black pytest
+      
+      - name: Verificar formato con black
+      - run: |
+          black --check .
+      
+      - name: Verificar estilo con f lake8
+      - run: |
+          flake8 .
+
+      - name: Ejecutar pruebas unitarias
+      - run: |
+          pytest -q
