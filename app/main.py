@@ -7,7 +7,7 @@ app = FastAPI(title="Secret guardian API")
 
 EVIDENCE_PATH = Path(__file__).resolve().parent.parent / "evidence"
 SECRETS_SCAN_JSON = EVIDENCE_PATH / "secrets-scan.json"
-API_KEY = "abcdefg123"
+API_KEY = "asdfasdfa123456fdsf901234567890"
 
 
 @app.get("/health")
