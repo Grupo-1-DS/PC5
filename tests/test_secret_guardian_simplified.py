@@ -83,14 +83,16 @@ class TestExclusions:
 class TestReports:
 
     def test_generate_report(self, scanner, tmp_path):
-        scanner.findings.append({
-            "file": "test.py",
-            "line": 1,
-            "pattern": "API_KEY",
-            "description": "Test",
-            "matched_text": "API_KEY=test",
-            "severity": "HIGH"
-        })
+        scanner.findings.append(
+            {
+                "file": "test.py",
+                "line": 1,
+                "pattern": "API_KEY",
+                "description": "Test",
+                "matched_text": "API_KEY=test",
+                "severity": "HIGH",
+            }
+        )
 
         output = tmp_path / "report.json"
         report = scanner.generate_report(output)

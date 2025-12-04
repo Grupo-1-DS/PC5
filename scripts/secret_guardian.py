@@ -1,5 +1,3 @@
-
-
 import re
 import os
 import json
@@ -23,54 +21,38 @@ class SecretGuardian:
     def __init__(self):
         self.patterns = self._initialize_patterns()
         self.findings = []
-        self.excluded_dirs = {'.git', 'node_modules',
-                              '__pycache__', '.venv', 'venv', 'evidence'}
-        self.excluded_extensions = {
-            '.pyc', '.pyo', '.exe', '.dll', '.so', '.dylib'}
+        self.excluded_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "evidence"}
+        self.excluded_extensions = {".pyc", ".pyo", ".exe", ".dll", ".so", ".dylib"}
 
     def _initialize_patterns(self) -> List[SecretPattern]:
         """Inicializa los patrones de detección de secretos"""
         return [
             SecretPattern(
-                "API_KEY",
-                r'API[_-]?KEY\s*[=:]\s*["\']?([a-zA-Z0-9_\-]{20,})["\']?',
-                "Detecta claves API hardcodeadas"
+                "API_KEY", r'API[_-]?KEY\s*[=:]\s*["\']?([a-zA-Z0-9_\-]{20,})["\']?', "Detecta claves API hardcodeadas"
             ),
-            SecretPattern(
-                "PASSWORD",
-                r'PASSWORD\s*[=:]\s*["\']([^"\']{4,})["\']',
-                "Detecta contraseñas hardcodeadas"
-            ),
+            SecretPattern("PASSWORD", r'PASSWORD\s*[=:]\s*["\']([^"\']{4,})["\']', "Detecta contraseñas hardcodeadas"),
             SecretPattern(
                 "SECRET",
                 r'SECRET[_-]?KEY?\s*[=:]\s*["\']?([a-zA-Z0-9_\-]{20,})["\']?',
-                "Detecta claves secretas hardcodeadas"
+                "Detecta claves secretas hardcodeadas",
             ),
             SecretPattern(
-                "TOKEN",
-                r'TOKEN\s*[=:]\s*["\']?([a-zA-Z0-9_\-]{20,})["\']?',
-                "Detecta tokens de autenticación"
+                "TOKEN", r'TOKEN\s*[=:]\s*["\']?([a-zA-Z0-9_\-]{20,})["\']?', "Detecta tokens de autenticación"
             ),
             SecretPattern(
                 "AWS_ACCESS_KEY",
                 r'AWS[_-]?ACCESS[_-]?KEY[_-]?ID\s*[=:]\s*["\']?(AKIA[A-Z0-9]{16})["\']?',
-                "Detecta AWS Access Key ID"
+                "Detecta AWS Access Key ID",
             ),
             SecretPattern(
-                "PRIVATE_KEY",
-                r'PRIVATE[_-]?KEY\s*[=:]\s*["\']([^"\']{20,})["\']',
-                "Detecta claves privadas"
+                "PRIVATE_KEY", r'PRIVATE[_-]?KEY\s*[=:]\s*["\']([^"\']{20,})["\']', "Detecta claves privadas"
             ),
             SecretPattern(
                 "DATABASE_URL",
                 r'DATABASE[_-]?URL\s*[=:]\s*["\']([^"\']+@[^"\']+)["\']',
-                "Detecta URLs de bases de datos con credenciales"
+                "Detecta URLs de bases de datos con credenciales",
             ),
-            SecretPattern(
-                "BEARER_TOKEN",
-                r'Bearer\s+([a-zA-Z0-9_\-\.]{20,})',
-                "Detecta tokens Bearer en headers"
-            ),
+            SecretPattern("BEARER_TOKEN", r"Bearer\s+([a-zA-Z0-9_\-\.]{20,})", "Detecta tokens Bearer en headers"),
         ]
 
     def should_scan_file(self, file_path: Path) -> bool:
@@ -85,7 +67,7 @@ class SecretGuardian:
 
         # Solo escanear archivos de texto
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
                 f.read(1024)
             return True
         except:
@@ -94,7 +76,7 @@ class SecretGuardian:
     def scan_file(self, file_path: Path) -> None:
         """Escanea un archivo en busca de secretos"""
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.readlines()
 
             for line_num, line in enumerate(content, start=1):
@@ -107,7 +89,7 @@ class SecretGuardian:
                             "pattern": pattern.name,
                             "description": pattern.description,
                             "matched_text": match.group(0),
-                            "severity": "HIGH"
+                            "severity": "HIGH",
                         }
                         self.findings.append(finding)
 
@@ -116,7 +98,7 @@ class SecretGuardian:
 
     def scan_directory(self, directory: Path) -> None:
         """Escanea recursivamente un directorio"""
-        for item in directory.rglob('*'):
+        for item in directory.rglob("*"):
             if item.is_file() and self.should_scan_file(item):
                 self.scan_file(item)
 
@@ -128,16 +110,16 @@ class SecretGuardian:
             "findings": self.findings,
             "summary": {
                 "high_severity": len([f for f in self.findings if f["severity"] == "HIGH"]),
-                "patterns_detected": list(set(f["pattern"] for f in self.findings))
+                "patterns_detected": list(set(f["pattern"] for f in self.findings)),
             },
-            "status": "FAIL" if self.findings else "PASS"
+            "status": "FAIL" if self.findings else "PASS",
         }
 
         # Asegurar que el directorio de salida existe
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Escribir el reporte
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 
         return report
@@ -171,22 +153,24 @@ def main():
     print(f"Total de hallazgos: {report['total_findings']}")
     print(f"Severidad alta: {report['summary']['high_severity']}")
     print(
-        f"Patrones detectados: {', '.join(report['summary']['patterns_detected']) if report['summary']['patterns_detected'] else 'Ninguno'}")
+        f"Patrones detectados: {', '.join(report['summary']['patterns_detected']) if report['summary']['patterns_detected'] else 'Ninguno'}"
+    )
     print(
-        f"Estado: {'FAIL - Se encontraron secretos' if report['status'] == 'FAIL' else 'PASS - No se encontraron secretos'}")
+        f"Estado: {'FAIL - Se encontraron secretos' if report['status'] == 'FAIL' else 'PASS - No se encontraron secretos'}"
+    )
     print(f"Reporte guardado en: {output_path}")
     print("=" * 60)
 
     # Mostrar detalles de hallazgos si existen
-    if report['findings']:
+    if report["findings"]:
         print("\nDETALLES DE HALLAZGOS:")
-        for i, finding in enumerate(report['findings'], 1):
+        for i, finding in enumerate(report["findings"], 1):
             print(f"\n  [{i}] {finding['pattern']}")
             print(f"      Archivo: {finding['file']}")
             print(f"      Linea: {finding['line']}")
             print(f"      Texto: {finding['matched_text'][:50]}...")
 
-    return 1 if report['status'] == 'FAIL' else 0
+    return 1 if report["status"] == "FAIL" else 0
 
 
 if __name__ == "__main__":
