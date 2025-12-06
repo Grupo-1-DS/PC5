@@ -8,6 +8,7 @@ services:
     container_name: secret-scanner-service
     volumes:
       - evidence_data:/app/evidence
+      - ./app:/scan-target
     restart: always
 
 volumes:
