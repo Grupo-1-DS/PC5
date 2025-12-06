@@ -7,7 +7,7 @@ app = FastAPI(title="Secret guardian API")
 
 EVIDENCE_PATH = Path(__file__).resolve().parent.parent / "evidence"
 SECRETS_SCAN_JSON = EVIDENCE_PATH / "secrets-scan.json"
-
+API_KEY = "asdfasdfa986f7a8sd6fa7s6df8a76sdf8a6sdf7sd"
 
 @app.get("/health")
 def health_check():
@@ -30,6 +30,7 @@ def config_check():
     }
     return {"rules": rules}
 
+PRIVATE_KEY = "aklshdfai7sdyfa4345fha9sd8fh9as8dhf9a8sdfhasd9f8a87sdfhg79789"
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

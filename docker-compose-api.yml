@@ -1,9 +1,9 @@
 services:
-  api:
+  guardian-api-service:
     build:
       context: .
       dockerfile: Dockerfile.api
-    container_name: api-service
+    container_name: guardian-api-service
     volumes:
       - evidence_data:/app/evidence
     ports:
