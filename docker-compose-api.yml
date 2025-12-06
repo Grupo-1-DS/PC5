@@ -1,0 +1,15 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: api-service
+    volumes:
+      - evidence_data:/app/evidence
+    ports:
+      - "8000:8000"
+    restart: always
+
+volumes:
+  evidence_data:
+    external: true
