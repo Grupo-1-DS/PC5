@@ -2,13 +2,13 @@ services:
   secret-scanner-service:
     build:
       context: .
-      dockerfile: Dockerfile.guardian
+      dockerfile: Dockerfile.scanner
     ports:
       - "8001:8001" 
     container_name: secret-scanner-service
     volumes:
       - evidence_data:/app/evidence
-      - ./app:/scan-target
+      - .:/scan-target
     restart: always
 
 volumes:
