@@ -127,22 +127,23 @@ class SecretGuardian:
 def main():
     """Función principal"""
     # Obtener el directorio raíz del proyecto
-    project_root = Path(__file__).parent.parent
+    project_root = Path(__file__).parent.parent.parent
+    scan_target = project_root / "scan-target"
 
     print("=" * 60)
     print("SECRET GUARDIAN - Escaner de Secretos Hardcodeados")
     print("=" * 60)
-    print(f"\nEscaneando directorio: {project_root}")
+    print(f"\nEscaneando directorio: {scan_target}")
     print(f"Inicio: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
     # Crear instancia del escáner
     scanner = SecretGuardian()
 
     # Escanear el directorio
-    scanner.scan_directory(project_root)
+    scanner.scan_directory(scan_target)
 
     # Generar reporte
-    output_path = project_root / "evidence" / "secrets-scan.json"
+    output_path = project_root / "app" / "evidence" / "secrets-scan.json"
     report = scanner.generate_report(output_path)
 
     # Mostrar resumen
