@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: secret-guardian-config
+  labels:
+    app: secret-guardian
+data:
+  API_PORT: "8000"
+  SCANNER_PORT: "8001"
+  EVIDENCE_PATH: "/app/evidence"
+  SCAN_TARGET_PATH: "/scan-target"
