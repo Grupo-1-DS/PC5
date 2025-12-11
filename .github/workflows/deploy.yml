@@ -1,0 +1,64 @@
+name: Deploy
+
+on: [push, pull_request]
+
+jobs:
+  policy_gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar conftest
+        run: |
+          wget https://github.com/open-policy-agent/conftest/releases/download/v0.51.0/conftest_0.51.0_Linux_x86_64.tar.gz
+          tar -xvf conftest_0.51.0_Linux_x86_64.tar.gz
+          sudo mv conftest /usr/local/bin/
+
+      - name: Ejecutar políticas de Conftest
+        run: conftest test k8s/
+
+  deploy:
+    needs: policy_gate
+    runs-on: self-hosted
+    if: success()
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Verificar minikube
+        run: |
+          minikube status || (echo "Minikube no está corriendo" && exit 1)
+
+      - name: Configurar contexto de kubectl para minikube
+        run: |
+          kubectl config use-context minikube
+
+      - name: Construir imágenes Docker en minikube
+        run: |
+          eval $(minikube docker-env)
+          docker build -t guardian-api:latest -f Dockerfile.api .
+          docker build -t secret-scanner:latest -f Dockerfile.scanner .
+
+      - name: Aplicar manifiestos de Kubernetes
+        run: |
+          kubectl apply -f k8s/
+
+      - name: Esperar despliegue de guardian-api
+        run: |
+          kubectl rollout status deployment/guardian-api --timeout=300s
+
+      - name: Esperar despliegue de secret-scanner
+        run: |
+          kubectl rollout status deployment/secret-scanner --timeout=300s
+
+      - name: Verificar pods
+        run: |
+          kubectl get pods -l app=secret-guardian
+
+      - name: Health check de guardian-api-service
+        run: |
+          echo "Verificando estado del servicio guardian-api"
+          curl -f $(minikube service guardian-api-service --url)/health || (echo "Health check falló" && exit 1)
+          echo "Health check exitoso"

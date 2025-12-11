@@ -27,6 +27,13 @@ spec:
         envFrom:
         - configMapRef:
             name: secret-guardian-config
+        env:
+          - name: API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: secret-guardian-api-secret
+                key: API_KEY
+
         volumeMounts:
         - name: evidence-data
           mountPath: /app/evidence

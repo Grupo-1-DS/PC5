@@ -110,6 +110,9 @@ docker logs guardian-api-service
 # Iniciar Minikube
 minikube start
 
+## Iniciar minikube y montar el código fuente en el contenedor directamente (recomendado si hay errores al hacerlo por separado)
+minikube start --mount=true --mount-string="$(pwd):/host-project"
+
 # Configurar Docker para usar el daemon de Minikube
 eval $(minikube docker-env)
 
@@ -120,13 +123,13 @@ docker build -t secret-scanner:latest -f Dockerfile.scanner .
 
 ### Montar el proyecto
 
-El scanner necesita acceso al código fuente. En una terminal separada ejecutá:
+El scanner necesita acceso al código fuente. En una terminal separada ejecuta:
 
 ```bash
 minikube mount "$(pwd):/host-project"
 ```
 
-Dejá esta terminal corriendo. Si la cerrás, el scanner no va a poder leer el código.
+Deja esta terminal corriendo. Si la cierras, el scanner no va a poder leer el código.
 
 ### Desplegar
 

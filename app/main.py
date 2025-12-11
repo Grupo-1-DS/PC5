@@ -32,6 +32,13 @@ def config_check():
     return {"rules": rules}
 
 
+@app.get("/check-secret")
+def check_secret():
+    if os.getenv("API_KEY") is not None:
+        return {"Secreto cargado": True}
+    return {"Secreto cargado": False}
+
+
 if __name__ == "__main__":
     port = int(os.getenv("API_PORT", "8000"))
     uvicorn.run(app, host="0.0.0.0", port=port)

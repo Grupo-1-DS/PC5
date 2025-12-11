@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Conftest
+conftest_0.65.0_Linux_x86_64.tar
+
+# Actions Runner
+actions-runner/

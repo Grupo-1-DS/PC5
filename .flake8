@@ -10,6 +10,7 @@ exclude =
     build,
     fixtures
     evidence
+    actions-runner
 extend-ignore =
     E501,
     E402,
