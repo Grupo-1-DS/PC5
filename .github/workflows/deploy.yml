@@ -62,17 +62,16 @@ jobs:
 
       - name: Health check de guardian-api-service
         run: |
-          echo "Verificando estado del servicio guardian-api"
-
-          GUARDIAN_API_URL=$(minikube service guardian-api-service --url)
-          SECRET_SCANNER_URL=$(minikube service secret-scanner-service --url)
-
-          echo "URL del servicio: $GUARDIAN_API_URL"
-          echo "URL del servicio: $SECRET_SCANNER_URL"
-
-          sleep 10
+          echo "Verificando salud de los servicios"
+          kubectl port-forward svc/guardian-api-service 8000:8000 &
+          sleep 5
+          curl -f http://localhost:8000/health || exit 1
+          echo "Guardian API saludable"
+          pkill -f "port-forward svc/guardian-api-service"
           
-          curl ${GUARDIAN_API_URL}/health || (echo "Health check falló" && exit 1)
-          curl ${SECRET_SCANNER_URL}/health || (echo "Health check falló" && exit 1)
-
-          echo "Health check exitoso"
+          kubectl port-forward svc/secret-scanner-service 8001:8001 &
+          sleep 5
+          curl -f http://localhost:8001/health || exit 1
+          echo "Secret Scanner saludable"
+          pkill -f "port-forward svc/secret-scanner-service"
+          
