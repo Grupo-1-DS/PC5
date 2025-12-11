@@ -63,5 +63,16 @@ jobs:
       - name: Health check de guardian-api-service
         run: |
           echo "Verificando estado del servicio guardian-api"
-          curl -f $(minikube service guardian-api-service --url)/health || (echo "Health check falló" && exit 1)
+
+          GUARDIAN_API_URL=$(minikube service guardian-api-service --url)
+          SECRET_SCANNER_URL=$(minikube service secret-scanner-service --url)
+
+          echo "URL del servicio: $GUARDIAN_API_URL"
+          echo "URL del servicio: $SECRET_SCANNER_URL"
+
+          sleep 10
+          
+          curl ${GUARDIAN_API_URL}/health || (echo "Health check falló" && exit 1)
+          curl ${SECRET_SCANNER_URL}/health || (echo "Health check falló" && exit 1)
+
           echo "Health check exitoso"
