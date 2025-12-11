@@ -2,10 +2,11 @@ from fastapi import FastAPI, HTTPException
 from pathlib import Path
 import json
 import uvicorn
+import os
 
 app = FastAPI(title="Secret guardian API")
 
-EVIDENCE_PATH = Path(__file__).resolve().parent.parent / "evidence"
+EVIDENCE_PATH = Path(os.getenv("EVIDENCE_PATH", str(Path(__file__).resolve().parent.parent / "evidence")))
 SECRETS_SCAN_JSON = EVIDENCE_PATH / "secrets-scan.json"
 
 
@@ -32,4 +33,5 @@ def config_check():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("API_PORT", "8000"))
+    uvicorn.run(app, host="0.0.0.0", port=port)
