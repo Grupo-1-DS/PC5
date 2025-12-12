@@ -20,7 +20,16 @@ class SecretGuardian:
     def __init__(self):
         self.patterns = self._initialize_patterns()
         self.findings = []
-        self.excluded_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "evidence", "fixtures", "actions-runner"}
+        self.excluded_dirs = {
+            ".git",
+            "node_modules",
+            "__pycache__",
+            ".venv",
+            "venv",
+            "evidence",
+            "fixtures",
+            "actions-runner",
+        }
         self.excluded_files = {"configmap.yml", "secret.yml"}
         self.excluded_extensions = {".pyc", ".pyo", ".exe", ".dll", ".so", ".dylib"}
 
