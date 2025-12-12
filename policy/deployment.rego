@@ -11,7 +11,7 @@ deny contains msg if {
     # Verifica si se usa envFrom
     not container.envFrom
     
-    # Verifica que ninguna variable use valueFrom
+    # Verifica si se usa valueFrom
     env_var := container.env[_]
     not env_var.valueFrom
     
