@@ -156,8 +156,8 @@ def main():
     output_path = project_root / "app" / "evidence" / "secrets-scan.json"
 
     if not os.path.exists(scan_target):
-        scan_target = Path(__file__).parent.parent
-        output_path = Path(__file__).parent.parent / "PC5" / "evidence" / "secrets-scan.json"
+        scan_target = Path(__file__).parent.parent.parent
+        output_path = Path(__file__).parent.parent.parent / "PC5" / "evidence" / "secrets-scan.json"
 
     print("=" * 60)
     print("SECRET GUARDIAN - Escaner de Secretos Hardcodeados")
