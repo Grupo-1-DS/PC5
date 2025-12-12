@@ -33,8 +33,7 @@ spec:
               secretKeyRef:
                 name: secret-guardian-api-secret
                 key: API_KEY
-          - name: TOKEN
-            value: "asd98fa90s8df09as8df09asd8f"
+
 
         volumeMounts:
         - name: evidence-data
