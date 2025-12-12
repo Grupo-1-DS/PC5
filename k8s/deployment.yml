@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guardian-api
+  labels:
+    app: secret-guardian
+    component: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secret-guardian
+      component: api
+  template:
+    metadata:
+      labels:
+        app: secret-guardian
+        component: api
+    spec:
+      containers:
+      - name: guardian-api
+        image: guardian-api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+          name: http
+        envFrom:
+        - configMapRef:
+            name: secret-guardian-config
+        env:
+          - name: API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: secret-guardian-api-secret
+                key: API_KEY
+
+
+        volumeMounts:
+        - name: evidence-data
+          mountPath: /app/evidence
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+      volumes:
+      - name: evidence-data
+        persistentVolumeClaim:
+          claimName: evidence-data-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secret-scanner
+  labels:
+    app: secret-guardian
+    component: scanner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secret-guardian
+      component: scanner
+  template:
+    metadata:
+      labels:
+        app: secret-guardian
+        component: scanner
+    spec:
+      containers:
+      - name: secret-scanner
+        image: secret-scanner:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8001
+          name: http
+        envFrom:
+        - configMapRef:
+            name: secret-guardian-config
+        volumeMounts:
+        - name: evidence-data
+          mountPath: /app/evidence
+        - name: scan-target
+          mountPath: /scan-target
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+      volumes:
+      - name: evidence-data
+        persistentVolumeClaim:
+          claimName: evidence-data-pvc
+      - name: scan-target
+        hostPath:
+          path: /host-project
+          type: Directory
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: evidence-data-pvc
+  labels:
+    app: secret-guardian
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
