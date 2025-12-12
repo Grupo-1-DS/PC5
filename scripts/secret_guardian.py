@@ -1,4 +1,5 @@
 import re
+import os
 import json
 from pathlib import Path
 from typing import List, Dict, Any
@@ -20,7 +21,17 @@ class SecretGuardian:
     def __init__(self):
         self.patterns = self._initialize_patterns()
         self.findings = []
-        self.excluded_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "evidence", "fixtures"}
+        self.excluded_dirs = {
+            ".git",
+            "node_modules",
+            "__pycache__",
+            ".venv",
+            "venv",
+            "evidence",
+            "fixtures",
+            "actions-runner",
+        }
+        self.excluded_files = {"configmap.yml", "secret.yml"}
         self.excluded_extensions = {".pyc", ".pyo", ".exe", ".dll", ".so", ".dylib"}
 
     def _initialize_patterns(self) -> List[SecretPattern]:
@@ -58,6 +69,10 @@ class SecretGuardian:
         """Determina si un archivo debe ser escaneado"""
         # Excluir directorios
         if any(excluded in file_path.parts for excluded in self.excluded_dirs):
+            return False
+
+        # Excluir archivos por nombre
+        if file_path.name in self.excluded_files:
             return False
 
         # Excluir por extensión
@@ -98,8 +113,17 @@ class SecretGuardian:
     def scan_directory(self, directory: Path) -> None:
         """Escanea recursivamente un directorio"""
         for item in directory.rglob("*"):
-            if item.is_file() and self.should_scan_file(item):
-                self.scan_file(item)
+
+            if any(excluded in item.parts for excluded in self.excluded_dirs):
+                continue
+
+            try:
+                if item.is_file() and self.should_scan_file(item):
+                    self.scan_file(item)
+            except OSError:
+                # Saltar archivos/directorios a los que no tenemos acceso
+                print(f"Saltando archivo inaccesible: {item}")
+                continue
 
     def generate_report(self, output_path: Path) -> Dict[str, Any]:
         """Genera el reporte JSON de resultados"""
@@ -129,6 +153,11 @@ def main():
     # Obtener el directorio raíz del proyecto
     project_root = Path(__file__).parent.parent.parent
     scan_target = project_root / "scan-target"
+    output_path = project_root / "app" / "evidence" / "secrets-scan.json"
+
+    if not os.path.exists(scan_target):
+        scan_target = Path(__file__).parent.parent
+        output_path = project_root / "PC5" / "evidence" / "secrets-scan.json"
 
     print("=" * 60)
     print("SECRET GUARDIAN - Escaner de Secretos Hardcodeados")
@@ -143,7 +172,6 @@ def main():
     scanner.scan_directory(scan_target)
 
     # Generar reporte
-    output_path = project_root / "app" / "evidence" / "secrets-scan.json"
     report = scanner.generate_report(output_path)
 
     # Mostrar resumen

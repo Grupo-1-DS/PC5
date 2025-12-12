@@ -110,23 +110,26 @@ docker logs guardian-api-service
 # Iniciar Minikube
 minikube start
 
+## Iniciar minikube y montar el código fuente en el contenedor directamente (recomendado si hay errores al hacerlo por separado)
+minikube start --mount=true --mount-string="$(pwd):/host-project"
+
 # Configurar Docker para usar el daemon de Minikube
 eval $(minikube docker-env)
 
 # Construir las imágenes
-docker build -t guardian-api:latest -f Dockerfile.api .
-docker build -t secret-scanner:latest -f Dockerfile.scanner .
+docker build --no-cache -t guardian-api:latest -f Dockerfile.api .
+docker build --no-cache -t secret-scanner:latest -f Dockerfile.scanner .
 ```
 
 ### Montar el proyecto
 
-El scanner necesita acceso al código fuente. En una terminal separada ejecutá:
+El scanner necesita acceso al código fuente. En una terminal separada ejecuta:
 
 ```bash
 minikube mount "$(pwd):/host-project"
 ```
 
-Dejá esta terminal corriendo. Si la cerrás, el scanner no va a poder leer el código.
+Deja esta terminal corriendo. Si la cierras, el scanner no va a poder leer el código.
 
 ### Desplegar
 
@@ -167,7 +170,7 @@ kubectl rollout restart deployment guardian-api secret-scanner
 
 Si el scanner da error de I/O en `/scan-target`:
 ```bash
-# El mount se cerró, volvé a ejecutarlo en otra terminal
+# El mount se cerró, vuelve a ejecutarlo en otra terminal
 minikube mount "$(pwd):/host-project"
 kubectl delete pod -l component=scanner
 ```
