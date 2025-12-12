@@ -2,6 +2,8 @@
 
 Secret Guardian es un sistema completo de escaneo y detección de secretos hardcodeados en repositorios de código. El proyecto implementa dos servicios principales: un escáner de secretos y una API para consultar los resultados.
 
+[videos Sprints](https://drive.google.com/drive/folders/1fjcc4sXmDtWOLDKLgc0_JBVpfoMI5S9L?usp=sharing)
+
 ## Descripción General
 
 Secret Guardian es una herramienta de seguridad que escanea repositorios en busca de secretos hardcodeados como:
