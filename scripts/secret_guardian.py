@@ -20,7 +20,8 @@ class SecretGuardian:
     def __init__(self):
         self.patterns = self._initialize_patterns()
         self.findings = []
-        self.excluded_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "evidence", "fixtures"}
+        self.excluded_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "evidence", "fixtures", "actions-runner"}
+        self.excluded_files = {"configmap.yml", "secret.yml"}
         self.excluded_extensions = {".pyc", ".pyo", ".exe", ".dll", ".so", ".dylib"}
 
     def _initialize_patterns(self) -> List[SecretPattern]:
@@ -58,6 +59,10 @@ class SecretGuardian:
         """Determina si un archivo debe ser escaneado"""
         # Excluir directorios
         if any(excluded in file_path.parts for excluded in self.excluded_dirs):
+            return False
+
+        # Excluir archivos por nombre
+        if file_path.name in self.excluded_files:
             return False
 
         # Excluir por extensión

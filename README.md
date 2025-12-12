@@ -117,8 +117,8 @@ minikube start --mount=true --mount-string="$(pwd):/host-project"
 eval $(minikube docker-env)
 
 # Construir las imágenes
-docker build -t guardian-api:latest -f Dockerfile.api .
-docker build -t secret-scanner:latest -f Dockerfile.scanner .
+docker build --no-cache -t guardian-api:latest -f Dockerfile.api .
+docker build --no-cache -t secret-scanner:latest -f Dockerfile.scanner .
 ```
 
 ### Montar el proyecto
@@ -170,7 +170,7 @@ kubectl rollout restart deployment guardian-api secret-scanner
 
 Si el scanner da error de I/O en `/scan-target`:
 ```bash
-# El mount se cerró, volvé a ejecutarlo en otra terminal
+# El mount se cerró, vuelve a ejecutarlo en otra terminal
 minikube mount "$(pwd):/host-project"
 kubectl delete pod -l component=scanner
 ```
